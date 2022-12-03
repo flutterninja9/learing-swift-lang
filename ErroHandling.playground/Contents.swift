@@ -91,3 +91,61 @@ do {
 } catch Car.Errors.invalidManufacturer{
     print("Inavalid manufacturer")
 }
+
+
+
+
+
+// If a function invokes another function that throws something
+// then we can user [rethrows] on main function instead of [throws]
+// NOTE: For this the main/parent function must have the child function as as argument and marked with [throws]
+
+func parent(
+    _ argA: String?,
+    _ argB: String?,
+      child: (String?, String?) throws -> String?
+) rethrows -> String? {
+         try child(argA,
+            argB
+         )
+}
+
+enum NameErrors : Error {
+    case firstNameInvalid
+    case lastNameInvalid
+}
+
+func + (
+    firstName: String?,
+    lastName: String?
+) throws ->  String? {
+    // [ guard ] statements are used for "making-sure" a certain condition is valid
+    
+    // this can be translated to
+    // "Make sure firstName is present and it is not empty else execute the else-block"
+    guard let firstName,
+            !firstName.isEmpty else{
+        throw NameErrors.firstNameInvalid
+    }
+    
+    guard let lastName,
+            !lastName.isEmpty else{
+        throw NameErrors.lastNameInvalid
+    }
+    
+    return "\(firstName) \(lastName)"
+}
+
+
+do {
+    let fullName = try parent(
+        "",
+        "",
+        child: +
+    )
+    
+    fullName
+}
+catch {
+    print(error)
+}
